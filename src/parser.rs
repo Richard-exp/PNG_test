@@ -10,7 +10,8 @@ pub struct Parser{
 }
 
 impl Parser{
-    pub fn new(path: &str) -> Parser {
+  
+    pub fn new(path: &str) -> Self {
         // Загрузите изображение из файла
         let img = image::open(path)
             .expect("Не удалось загрузить изображение");
@@ -24,28 +25,28 @@ impl Parser{
         // darkness_threshold
         let mut darkness_threshold: u8 = 0;
 
-        Parser{
+        Self {
             img,
-            width,
+            width, 
             height,
             darkness_threshold,
             pixels_u1,
         }
     }
 
-    pub fn set_darkness_threshold(&self, threshold: u8) -> &Self {
+    pub fn set_darkness_threshold(&mut self, threshold: u8) -> &mut Self {
         self.darkness_threshold = threshold;
         self
     }
 
-    pub fn create_field(&self) -> Vec<u8> {
+    pub fn create_field(&mut self) -> &Vec<u8> {
         // Заполните вектор значениями пикселей изображения 0 или 1 в зависимости от того, является ли пиксель черным
         for y in 0..self.height {
             for x in 0..self.width {
                 self.pixels_u1.push(self.is_pixel_black(self.img.get_pixel(x, y)) as u8);
             }
         }
-        self.pixels_u1
+        &self.pixels_u1
     }
 
     fn is_pixel_black(&self, pixel: image::Rgba<u8>) -> bool {
