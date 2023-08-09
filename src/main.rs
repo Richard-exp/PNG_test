@@ -1,30 +1,18 @@
-use std::io::BufReader;
-use std::path;
+mod parser;
 
-use image::ImageFormat;
-use image::GenericImageView;
-use std::fs::File;
-use std::path::Path;
+use parser::Parser;
 
 fn main() {
-    // Загрузите изображение из файла
-    let img = image::open("example.png").expect("Не удалось загрузить изображение");
-
-    // Получите размер изображения
-    let (width, height) = img.dimensions();
-
-    // Создайте вектор для хранения пикселей
-    let mut pixels: Vec<[u8; 4]> = Vec::with_capacity((width * height) as usize);
-
-    // Заполните вектор значениями пикселей изображения
-    for y in 0..height {
-        for x in 0..width {
-            let pixel = img.get_pixel(x, y);
-            pixels.push(pixel.0);
-        }
-    }
+    // Загрузите изображение из файла, устанавливаем порог черноты 
+    // и создаем поле из 0 и 1
+    let pixels = 
+        Parser::new("example.png")
+        .set_darkness_threshold(42)
+        .create_field();
 
     // Теперь у вас есть вектор pixels, содержащий пиксели изображения в формате [R, G, B, A].
     let mut counter = 0;
-    pixels.iter().for_each(|pix| if pix[0] == 0 {counter+=1; print!("{} ", counter)});
+    pixels.iter().for_each(|pix| if *pix == 0 {counter+=1; });
+
+    println!("{} pixels are black", counter);
 }
