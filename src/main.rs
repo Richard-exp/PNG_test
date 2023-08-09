@@ -12,7 +12,7 @@ fn main() {
 
     // Теперь у вас есть вектор pixels, содержащий пиксели изображения в формате [R, G, B, A].
     let mut counter = 0;
-    pixels.iter().for_each(|pix| if *pix == 0 {counter+=1; });
+    pixels.iter().for_each(|pix| if *pix == 1 {counter+=1; });
 
     println!("{} pixels are black", counter);
 }
