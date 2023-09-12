@@ -18,6 +18,8 @@ impl Parser{
 
         // Получите размер изображения
         let (width, height) = img.dimensions();
+
+        print!("Width is: {width},{height}");
         
         // Создайте вектор для хранения 0 и 1
         let mut pixels_u1: Vec<u8> = Vec::with_capacity((width * height) as usize);
@@ -39,14 +41,14 @@ impl Parser{
         self
     }
 
-    pub fn create_field(&mut self) -> &Vec<u8> {
+    pub fn create_field(&mut self) -> Vec<Vec<u8>> {
         // Заполните вектор значениями пикселей изображения 0 или 1 в зависимости от того, является ли пиксель черным
         for y in 0..self.height {
             for x in 0..self.width {
                 self.pixels_u1.push(self.is_pixel_black(self.img.get_pixel(x, y)) as u8);
             }
         }
-        &self.pixels_u1
+        self.transform_to_2d()
     }
 
     fn is_pixel_black(&self, pixel: image::Rgba<u8>) -> bool {
@@ -54,7 +56,19 @@ impl Parser{
         let intensity = (pixel[0] as u16 + pixel[1] as u16 + pixel[2] as u16) / 3;
 
         // Проверяем, является ли интенсивность меньше заданного порога черноты
-        return intensity <= (self.darkness_threshold as u16);
+        return !(intensity <= (self.darkness_threshold as u16));
+    }
+
+    fn transform_to_2d(&mut self) -> Vec<Vec<u8>> {
+        // Create a 2D vector by iterating and splitting the one-dimensional vector
+        let mut two_d_vector: Vec<Vec<u8>> = Vec::with_capacity(self.height as usize);
+        
+        for chunk in self.pixels_u1.chunks(self.width as usize) {
+            let row: Vec<u8> = chunk.to_vec();
+            two_d_vector.push(row);
+        }
+
+        two_d_vector
     }
 }
 
